@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Splitbit Game Recommendations</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Splitbit Game Recommendations</h1>
+        <form id="recommendation-form">
+            <div class="form-group">
+                <label for="genre">Genre:</label>
+                <input type="text" id="genre" name="genre" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="rating">Minimum Rating:</label>
+                <input type="number" step="0.1" id="rating" name="rating" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="price">Maximum Price:</label>
+                <input type="number" step="0.01" id="price" name="price" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        <table id="recommendation-table" class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Platform</th>
+                    <th>Price</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const form = document.getElementById('recommendation-form');
+        const table = document.getElementById('recommendation-table');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const genre = document.getElementById('genre').value;
+            const rating = document.getElementById('rating').value;
+            const price = document.getElementById('price').value;
+
+            fetch('/recommendations?genre=' + genre + '&rating=' + rating + '&price=' + price)
+                .then(response => response.json())
+                .then(games => {
+                    table.getElementsByTagName('tbody')[0].innerHTML = '';
+
+                    games.forEach(game => {
+                        const row = document.createElement('tr');
+
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = game.name;
+                        row.appendChild(nameCell);
+
+                        const genreCell = document.createElement('td');
+                        genreCell.textContent = game.genre;
+                        row.appendChild(genreCell);
+
+                        const platformCell = document.createElement('td');
+                        platformCell.textContent = game.platform;
+                        row.appendChild(platformCell);
+
+                        const priceCell = document.createElement('td');
+                        priceCell.textContent = '$' + game.price.toFixed(2);
+                        row.appendChild(priceCell);
+
+                        const ratingCell = document.createElement('td');
+                        ratingCell.textContent = game.rating.toFixed(1);
+                        row.appendChild(ratingCell);
+
+                        table.getElementsByTagName('tbody')[0].appendChild(row);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
